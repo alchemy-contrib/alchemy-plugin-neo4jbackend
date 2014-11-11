@@ -3,48 +3,47 @@
     return {
       a: instance,
       conf: instance.conf.plugins["neo4j"],
+      graphJSON: {},
       constructor: function() {
         var conf, defaultSettings;
         conf = this.conf;
-        console.log("It has loaded");
         defaultSettings = {
           "url": "http://127.0.0.1:7474/db/data/transaction/commit",
-          "template": null
+          "query": null
         };
         return this.conf = _.defaults(conf, defaultSettings);
       },
-      runTemplate: function() {
-        var conf;
+      runQuery: function(query) {
+        var conf, plugin;
+        plugin = this.a.plugins.neo4jBackend;
         conf = this.conf;
-        console.log("running template");
+        query = query != null ? query : conf.query;
         return d3.xhr(conf.url).header("Content-Type", "application/json").send("POST", JSON.stringify({
           statements: [
             {
-              statement: conf.template,
+              statement: query,
               parameters: {},
               resultDataContents: ["row", "graph"]
             }
           ]
         }), function(err, res) {
-          var cols, labels, nodes, rels, rows;
+          var cols, edges, nodes, rows;
           if (err != null) {
-            console.log(err);
+            return console.log(err);
           }
           res = JSON.parse(res.response);
           if (res != null) {
             cols = res.results[0].columns;
-            rows = res.results[0].data.map(function(row) {
-              var r;
-              r = {};
+            rows = res.results[0].data.map(function(r) {
+              var results;
+              results = {};
               _.each(cols, function(col, index) {
-                return r[col] = row.row[index];
+                return results[col] = r.row[index];
               });
-              return r;
+              return results;
             });
             nodes = [];
-            rels = [];
-            labels = [];
-            console.log(res);
+            edges = [];
             _.each(res.results[0].data, function(row) {
               _.each(row.graph.nodes, function(n) {
                 var found, node;
@@ -55,13 +54,10 @@
                   node = n.properties || {};
                   node.id = n.id;
                   node.type = n.labels[0];
-                  nodes.push(node);
-                  if (labels.indexOf(node.type) === -1) {
-                    return labels.push(node.type);
-                  }
+                  return nodes.push(node);
                 }
               });
-              return rels = rels.concat(row.graph.relationships.map(function(r) {
+              return edges = edges.concat(row.graph.relationships.map(function(r) {
                 return {
                   source: r.startNode,
                   target: r.endNode,
@@ -70,14 +66,10 @@
               }));
             });
           }
-          return console.log(null, {
-            table: rows,
-            graph: {
-              nodes: nodes,
-              edges: rels
-            },
-            labels: labels
-          });
+          return plugin.graphJSON = {
+            nodes: nodes,
+            edges: edges
+          };
         });
       }
     };
