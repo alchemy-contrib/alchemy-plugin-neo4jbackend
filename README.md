@@ -1,25 +1,46 @@
-inter
-===========
+neo4jBackend
+============
 
-Minimal lib for DOM interaction
+Neo4j backend for AlchemyJS
 
-Implements common js functions without having to rely on a large library like jQuery or an even larger framework.
-Designed so you can easily remove pieces that you do not use to further minimize lib size.
+Still dependant on Alchemy plugins being built in.
+For it to work an empty "plugins" key should be added to the Alchemy prototype.
 
-What does it do?
-================
-Allows simple:
-* selection of a DOM element via css selector
-* creation of a DOM element
-* setting of attributes on a DOM element
+After that it can be configured by placing a "plugins" key in the conf like so:
 
-Why doesn't it...
-=================
-Most sites only use a few functions, mainly to get and set DOM elements. Libs with unused functions slow things down for the user. We seem to forget that the user is the priority, and anything that slows the page without benifit is a cardinal sin. Many libs sprawl and try to cover all functionality just incase.  Inter just lets you get and set effectively and efficiently.
+~~~ js
+  var conf = {
+    dataSource: "sample_data/movies.json",
+    plugins: {
+      neo4j: {
+        url  : "http://127.0.0.1:7474/db/data/transaction/commit",
+        query: "MATCH (n) RETURN n"
+      }
+    }
+  }
+~~~
 
-License
-=======
+I've been running
+~~~ js
+var neo = alchemy.plugins.neo4jBackend; neo = alchemy.plugins.neo4jBackend = neo(alchemy); neo.constructor(); neo.runQuery()
+~~~
+in the console afterwards to initialize.  Again, this is something that will be taken care of by Alchemy after plugin support is built.
 
-Beerware.
+### USING:
+While the "query" config setting defines a default query to execute, this isn't really reccommended and is mainly there for testing purposes or for very specific use cases.  Instead, a cypher query can be passed in to the runQuery() method:
 
-If you use this library and happen to run into someone who has contributed to it, strongly consider buying them a beer/coffee/social beverage to say thank you.  Other than that, do what you will.
+~~~ js
+  alchemy.plugins.neo4jBackend.runQuery("MATCH (n)-[e]->(m) RETURN n")
+~~~
+
+And those queries have full access to both read and write capabilities...anything you can do from the neo4j console.
+
+Use with caution and not in a world-facing production environment.
+
+After a query is ran, the latest results can be found in alchemy.plugins.neo4jBackend.graphJSON .
+
+### TODO:
+* build out plugin support in alchemy
+* build out node creation API for alchemy
+* build out better API for neo4jBackend
+* build out a "history" system, as well as saftey measures for possibly destructive cypher queries.
