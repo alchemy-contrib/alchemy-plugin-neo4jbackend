@@ -1,2 +1,6 @@
-node_modules/
+js
+node_modules
+coverage
+future.sh
+build
 *.swp

@@ -1,18 +1,18 @@
 {
-  "name": "inter",
+  "name": "Neo4Alchemy",
   "version": "0.1.0",
-  "description": "Minimal lib for DOM interaction",
-  "main": "index.coffee",
+  "description": "An Alchemyjs plugin for using Neo4j on the backend",
+  "main": "main.coffee",
   "scripts": {
     "test": "coffee -co js . && cp -R tests/data js/tests/data && istanbul cover node_modules/mocha/bin/_mocha -- -t 10000 --recursive js/tests -R spec -r should && cp README.md package.json js/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mdcox/inter.git"
+    "url": "https://github.com/alchemy-contrib/alchemy-plugin-neo4jbackend"
   },
-  "keywords": [],
+  "keywords": ["AlchemyJS", "Alchemy", "Neo4j", "Graph", "Graph Visualization"],
   "author": "Matt Cox",
-  "license": "Beerware",
+  "license": "AGPL",
   "dependencies": {
     "async": "~0.2.9"
   },
