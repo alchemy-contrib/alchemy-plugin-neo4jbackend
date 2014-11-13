@@ -2,7 +2,7 @@ Alchemy::plugins.neo4jBackend = (instance) ->
   a: instance
   conf: instance.conf.plugins["neo4jBackend"]
   graphJSON:  {}
-  constructor: ->
+  init: ->
     conf = @conf
 
     # Fill in blank settings with the defaults
