@@ -1,5 +1,5 @@
 {
-  "name": "Neo4Alchemy",
+  "name": "alchemy-plugin-neo4jbackend",
   "version": "0.1.0",
   "description": "An Alchemyjs plugin for using Neo4j on the backend",
   "main": "main.coffee",
