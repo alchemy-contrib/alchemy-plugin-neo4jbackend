@@ -1,0 +1,13 @@
+{
+  "name": "alchemy-plugin-neo4jbackend",
+  "version": "0.0.1",
+  "main": [
+    "dist/neo4jbackend.js"
+  ],
+  "ignore": [
+    "app",
+    "test"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
