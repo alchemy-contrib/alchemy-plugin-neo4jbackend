@@ -2,9 +2,9 @@
   Alchemy.prototype.plugins.neo4jBackend = function(instance) {
     return {
       a: instance,
-      conf: instance.conf.plugins["neo4j"],
+      conf: instance.conf.plugins["neo4jBackend"],
       graphJSON: {},
-      constructor: function() {
+      init: function() {
         var conf, defaultSettings;
         conf = this.conf;
         defaultSettings = {
@@ -13,7 +13,7 @@
         };
         return this.conf = _.defaults(conf, defaultSettings);
       },
-      runQuery: function(query) {
+      runQuery: function(query, callback) {
         var conf, plugin;
         plugin = this.a.plugins.neo4jBackend;
         conf = this.conf;
@@ -66,10 +66,14 @@
               }));
             });
           }
-          return plugin.graphJSON = {
+          plugin.graphJSON = {
             nodes: nodes,
             edges: edges
           };
+          if (callback != null) {
+            callback(plugin.graphJSON);
+          }
+          return plugin.graphJSON;
         });
       }
     };

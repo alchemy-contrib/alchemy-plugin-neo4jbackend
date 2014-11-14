@@ -12,7 +12,7 @@ Alchemy::plugins.neo4jBackend = (instance) ->
 
     @conf = _.defaults conf, defaultSettings
 
-  runQuery: (query) ->
+  runQuery: (query, callback) ->
     plugin = @a.plugins.neo4jBackend
     conf   = @conf
     query  = if query? then query else conf.query
@@ -52,5 +52,9 @@ Alchemy::plugins.neo4jBackend = (instance) ->
                    source : r.startNode
                    target : r.endNode
                    caption: r.type
+
              # return graph json
              plugin.graphJSON = nodes:nodes, edges:edges
+
+             if callback? then callback(plugin.graphJSON)
+             plugin.graphJSON
