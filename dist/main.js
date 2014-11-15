@@ -84,14 +84,20 @@
             edges: edges
           };
           if (callback != null) {
-            callback(plugin.graphJSON);
+            callback(plugin.graphJSON, plugin.a);
           }
           return plugin.graphJSON;
         });
       },
-      updateGraph: function() {
-        this.a.create.nodes(this.graphJSON["nodes"]);
-        return this.a.create.nodes(this.graphJSON["edges"]);
+      updateGraph: function(graphJSON, a) {
+        if (a == null) {
+          a = instance;
+        }
+        if (graphJSON == null) {
+          graphJSON = this.graphJSON;
+        }
+        a.create.nodes(graphJSON["nodes"]);
+        return a.create.nodes(graphJSON["edges"]);
       }
     };
   };

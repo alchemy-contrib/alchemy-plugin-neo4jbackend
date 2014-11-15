@@ -64,9 +64,14 @@ Alchemy::plugins.neo4jBackend = (instance) ->
              # return graph json
              plugin.graphJSON = nodes:nodes, edges:edges
 
-             if callback? then callback(plugin.graphJSON)
+             if callback? then callback(plugin.graphJSON, plugin.a)
              plugin.graphJSON
 
-  updateGraph: ->
-    @a.create.nodes @graphJSON["nodes"]
-    @a.create.nodes @graphJSON["edges"]
+  updateGraph:(graphJSON, a) ->
+    # Arguments can be blank if called directly.
+    # If called as part of a callback arguments might be necessary
+    a ?= instance
+    graphJSON ?= @graphJSON
+
+    a.create.nodes graphJSON["nodes"]
+    a.create.nodes graphJSON["edges"]
