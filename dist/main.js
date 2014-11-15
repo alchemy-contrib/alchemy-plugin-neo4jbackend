@@ -7,17 +7,30 @@
       init: function() {
         var conf, defaultSettings;
         conf = this.conf;
+        instance.conf.backend = "neo4jBackend";
         defaultSettings = {
-          "url": "http://127.0.0.1:7474/db/data/transaction/commit",
-          "query": null
+          url: "http://127.0.0.1:7474/db/data/transaction/commit",
+          query: {
+            cypher: "###",
+            nodeType: "MATCH (n:###) RETURN n",
+            edgeType: "MATCH [e:###] RETURN e"
+          }
         };
         return this.conf = _.defaults(conf, defaultSettings);
       },
+      buildQuery: function(input, type) {
+        if (this.conf.query[type] != null) {
+          return this.conf.query[type].replace(/###/, input);
+        }
+        return input;
+      },
       runQuery: function(query, callback) {
         var conf, plugin;
+        if (callback == null) {
+          callback = this.updateGraph;
+        }
         plugin = this.a.plugins.neo4jBackend;
         conf = this.conf;
-        query = query != null ? query : conf.query;
         return d3.xhr(conf.url).header("Content-Type", "application/json").send("POST", JSON.stringify({
           statements: [
             {
@@ -75,6 +88,10 @@
           }
           return plugin.graphJSON;
         });
+      },
+      updateGraph: function() {
+        this.a.create.nodes(this.graphJSON["nodes"]);
+        return this.a.create.nodes(this.graphJSON["edges"]);
       }
     };
   };

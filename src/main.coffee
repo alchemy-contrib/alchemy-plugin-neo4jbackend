@@ -4,18 +4,26 @@ Alchemy::plugins.neo4jBackend = (instance) ->
   graphJSON:  {}
   init: ->
     conf = @conf
+    instance.conf.backend = "neo4jBackend"
 
     # Fill in blank settings with the defaults
     defaultSettings =
-      "url"  : "http://127.0.0.1:7474/db/data/transaction/commit"
-      "query": null
+      url  : "http://127.0.0.1:7474/db/data/transaction/commit"
+      query:
+        cypher  : "###"
+        nodeType: "MATCH (n:###) RETURN n"
+        edgeType: "MATCH [e:###] RETURN e"
 
     @conf = _.defaults conf, defaultSettings
+  
+  buildQuery: (input, type) ->
+    if @conf.query[type]?
+      return @conf.query[type].replace /###/, input
+    return input
 
-  runQuery: (query, callback) ->
+  runQuery: (query, callback=@updateGraph) ->
     plugin = @a.plugins.neo4jBackend
     conf   = @conf
-    query  = if query? then query else conf.query
 
     # Send request to Neo4j
     d3.xhr(conf.url)
@@ -58,3 +66,7 @@ Alchemy::plugins.neo4jBackend = (instance) ->
 
              if callback? then callback(plugin.graphJSON)
              plugin.graphJSON
+
+  updateGraph: ->
+    @a.create.nodes @graphJSON["nodes"]
+    @a.create.nodes @graphJSON["edges"]
