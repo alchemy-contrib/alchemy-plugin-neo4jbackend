@@ -10,15 +10,27 @@ Alchemy::plugins.neo4jBackend = (instance) ->
     defaultSettings =
       url  : "http://127.0.0.1:7474/db/data/transaction/commit"
       query:
-        cypher  : "###"
-        nodeType: "MATCH (n:###) RETURN n"
-        edgeType: "MATCH [e:###] RETURN e"
+        cypher  : "{0}"
+        nodeType: "MATCH (n:{0}) RETURN n"
+        edgeType: "MATCH ()-[e:{0}]->() RETURN e"
+        nodeProp: "MATCH (n { {0}:'{1}' }) RETURN n"
+        edgeProp: "MATCH ()-[e { {0}:'{1}' }]->() RETURN e"
 
     @conf = _.defaults conf, defaultSettings
   
   buildQuery: (input, type) ->
+    
+    # Allow 'printf' style formatting in strings
+    String::format = (arr)->
+      formatted = @
+      _.each arr, (arg, i)->
+        regex = new RegExp "\\{#{i}\\}", 'gi'
+        formatted = formatted.replace regex, arg
+      formatted
+
+    inpArray = input.split /,\s*/
     if @conf.query[type]?
-      return @conf.query[type].replace /###/, input
+      return @conf.query[type].format inpArray
     return input
 
   runQuery: (query, callback=@updateGraph) ->

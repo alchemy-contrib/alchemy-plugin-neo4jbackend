@@ -11,16 +11,30 @@
         defaultSettings = {
           url: "http://127.0.0.1:7474/db/data/transaction/commit",
           query: {
-            cypher: "###",
-            nodeType: "MATCH (n:###) RETURN n",
-            edgeType: "MATCH [e:###] RETURN e"
+            cypher: "{0}",
+            nodeType: "MATCH (n:{0}) RETURN n",
+            edgeType: "MATCH ()-[e:{0}]->() RETURN e",
+            nodeProp: "MATCH (n { {0}:'{1}' }) RETURN n",
+            edgeProp: "MATCH ()-[e { {0}:'{1}' }]->() RETURN e"
           }
         };
         return this.conf = _.defaults(conf, defaultSettings);
       },
       buildQuery: function(input, type) {
+        var inpArray;
+        String.prototype.format = function(arr) {
+          var formatted;
+          formatted = this;
+          _.each(arr, function(arg, i) {
+            var regex;
+            regex = new RegExp("\\{" + i + "\\}", 'gi');
+            return formatted = formatted.replace(regex, arg);
+          });
+          return formatted;
+        };
+        inpArray = input.split(/,\s*/);
         if (this.conf.query[type] != null) {
-          return this.conf.query[type].replace(/###/, input);
+          return this.conf.query[type].format(inpArray);
         }
         return input;
       },
