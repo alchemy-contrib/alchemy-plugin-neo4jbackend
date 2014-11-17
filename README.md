@@ -14,8 +14,8 @@ neo4jBackend can be configured by placing a "plugins" key in the conf like so:
       neo4jBackend: {
         url  : "http://127.0.0.1:7474/db/data/transaction/commit",
         query: {
-	  "cypher": "###",
-	  "nodeType": "MATCH (n:###) RETURN n"
+	  "cypher": "{0}",
+	  "nodeType": "MATCH (n:{0}) RETURN n"
 	}
       }
     }
@@ -45,15 +45,18 @@ The `query` configuration can be set to create a custom cypher query. For exampl
 ~~~ js 
   query: {
    ...
-     "firstDegreeNodes": "MATCH (n)-->(m) WHERE n.id = '###' RETURN n, m",
+     "Find by Node and Edge Type": "MATCH (n:{0})-[e:{1}]->(m:{0}) RETURN e",
    ...
   }
 ~~~
 
-running `alchemy.plugins.neo4jBackend.buildQuery("33", "firstDegreeNodes")` will return
-`MATCH (n)-->(m) WHERE n.id = '33' RETURN n, m`
+running `alchemy.plugins.neo4jBackend.buildQuery("Person, KNOWS", "Find by Node and Edge Type")` will return
+`MATCH (n:Person)-[e:KNOWS]->(m:Person) RETURN e`
 
-Which, when passed into runQuery() will return graphJSON conaining all nodes directly connected to the node with an id of '33'.
+Which, when passed into runQuery() will return graphJSON containing all nodes and edges of people who "KNOW" someone else
+
+The interpolation syntax works exactly like Python's `"".format()`, and C/C++/Go's `printf()` where `{0}` refers to the first word passed in, `{1}` the second, and so on.
+An argument can be used multiple times in a query, as it is done for the node types in the above example.
 
 ### TODO:
 * build out better API for neo4jBackend
