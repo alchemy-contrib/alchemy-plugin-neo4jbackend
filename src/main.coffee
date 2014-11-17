@@ -74,4 +74,4 @@ Alchemy::plugins.neo4jBackend = (instance) ->
     graphJSON ?= @graphJSON
 
     a.create.nodes graphJSON["nodes"]
-    a.create.nodes graphJSON["edges"]
+    a.create.edges graphJSON["edges"]

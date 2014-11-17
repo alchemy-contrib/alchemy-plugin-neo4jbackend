@@ -97,7 +97,7 @@
           graphJSON = this.graphJSON;
         }
         a.create.nodes(graphJSON["nodes"]);
-        return a.create.nodes(graphJSON["edges"]);
+        return a.create.edges(graphJSON["edges"]);
       }
     };
   };
